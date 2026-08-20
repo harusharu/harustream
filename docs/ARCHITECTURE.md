@@ -35,8 +35,28 @@ src/
 │   ├── log.ts      #   pino structured logging
 │   └── utils.ts
 ├── instrumentation.ts  # server boot lifecycle hook
-└── proxy.ts            # middleware: request-id stamping + request logging
+├── proxy.ts            # middleware: request-id stamping + request logging
 ```
+
+## Forward proxy (`server/`)
+
+`server/forward-proxy.mjs` is a standalone, zero-dependency HTTP forward proxy
+(Node-only, no build step) meant to run on a VPS / home server with a
+residential IP. Some provider CDNs return `403` for Vercel's datacenter IPs,
+so the app can route **all** server-side outbound HTTP — provider module
+scrapes and media-proxy upstream reads — through it via the standard
+`HTTP_PROXY`/`HTTPS_PROXY` env vars.
+
+- `src/lib/net/proxy.ts` turns those env vars into an undici `ProxyAgent` and
+  an axios proxy config.
+- Provider modules egress through the proxy via their axios instance
+  (`src/providers/context.ts`) and the sandbox `fetch` (`src/providers/sandbox.ts`)
+  and `providerFetch` (`src/providers/fetch.ts`).
+- The media proxy's upstream fetch (`src/lib/media/streamProxy.ts`) uses the
+  same `proxyFetch`, so HLS segments and MP4s are read from the proxy host too.
+
+Run it with `pnpm start:proxy` (`PROXY_USERNAME`/`PROXY_PASSWORD`/`PORT` env),
+then set `HTTP_PROXY`/`HTTPS_PROXY` on the app host.
 
 ## providers/ vs media/
 

@@ -14,6 +14,7 @@
 // deadline aborts the shared signal so in-flight axios/fetch calls stop too.
 
 import vm from 'node:vm';
+import { proxyFetch } from '@/lib/net/proxy';
 import { ProviderError } from './errors';
 import { MODULE_SYNC_TIMEOUT_MS, PROVIDER_TIMEOUT_MS } from './registry/config';
 
@@ -34,7 +35,10 @@ function buildContext(providerContext: Record<string, unknown>) {
     providerGlobal: {},
     providerContext,
     console,
-    fetch,
+    // Proxy-aware fetch: when HTTP_PROXY/HTTPS_PROXY is configured the module's
+    // outbound requests egress from the forward proxy host (Vercel datacenter
+    // IPs are 403'd by some provider CDNs).
+    fetch: proxyFetch,
     Headers,
     Request,
     Response,

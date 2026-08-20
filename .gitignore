@@ -5,6 +5,7 @@ node_modules
 .DS_Store
 .claude/
 *.tsbuildinfo
+dist/
 
 # Environment variables
 .env

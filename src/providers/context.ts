@@ -6,6 +6,7 @@
 import { randomBytes } from 'node:crypto';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { axiosProxyConfig } from '@/lib/net/proxy';
 import { ProviderError } from './errors';
 import { getProviders } from './registry/manifest';
 
@@ -79,10 +80,17 @@ export type ProviderContext = {
 };
 
 export function createProviderContext(): ProviderContext {
+  const proxy = axiosProxyConfig();
   return {
     // The modules pass their own `signal` in request config, so the instance
-    // only needs a fallback timeout for requests that omit one.
-    axios: axios.create({ timeout: 30_000 }),
+    // only needs a fallback timeout for requests that omit one. When a
+    // forward proxy is configured (HTTP_PROXY/HTTPS_PROXY), the provider's
+    // scrapes egress from that host instead of Vercel's datacenter IPs —
+    // some provider CDNs 403 cloud IPs.
+    axios: axios.create({
+      timeout: 30_000,
+      proxy: proxy ?? false,
+    }),
     cheerio,
     Crypto,
     commonHeaders,

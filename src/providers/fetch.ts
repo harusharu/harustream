@@ -3,6 +3,7 @@
 // and caps each attempt with a timeout so a stalled upstream never pins a
 // route handler.
 
+import { proxyFetch } from '@/lib/net/proxy';
 import { ProviderError } from './errors';
 import { PROVIDER_MAX_ATTEMPTS } from './registry/config';
 
@@ -25,7 +26,7 @@ export async function providerFetch(
     const onAbort = () => controller.abort();
     signal?.addEventListener('abort', onAbort, { once: true });
     try {
-      const response = await fetch(url, {
+      const response = await proxyFetch(url, {
         headers: { Accept: 'application/json,text/plain,*/*', ...headers },
         signal: controller.signal,
         cache: 'no-store',

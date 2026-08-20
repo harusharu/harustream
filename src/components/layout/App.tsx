@@ -47,6 +47,7 @@ import { Library } from '../features/library/Library';
 import { Results } from '../features/search/Results';
 import { SettingsView } from '../features/settings/SettingsView';
 import { FloatingMenu } from './FloatingMenu';
+import { Footer } from './Footer';
 import { Notice } from './Notice';
 
 // The player bundles hls.js (~500KB), which would bloat the first paint if
@@ -772,6 +773,7 @@ export function App() {
               )}
             </motion.div>
           </AnimatePresence>
+          <Footer />
         </div>
         <FloatingMenu
           view={state.view}

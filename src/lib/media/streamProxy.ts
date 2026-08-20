@@ -15,6 +15,7 @@
 //  - private/internal hosts are rejected (SSRF guard)
 
 import { scopeLogger } from '@/lib/log';
+import { proxyFetch } from '@/lib/net/proxy';
 
 export type ProxyHeaders = Record<string, string>;
 
@@ -178,7 +179,7 @@ export async function proxyStream(url: string, options: ProxyOptions = {}): Prom
   const started = Date.now();
   let upstream: Response;
   try {
-    upstream = await fetch(url, {
+    upstream = await proxyFetch(url, {
       headers,
       cache: 'no-store',
       redirect: 'follow',

@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/next-env.d.ts"]
+    "includes": ["**", "!**/next-env.d.ts", "!**/.agents"]
   },
   "formatter": {
     "enabled": true,
